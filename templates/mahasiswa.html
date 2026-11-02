@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mahasiswa</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Data Mahasiswa</h2>
+
+        <a href="/database_mahasiswa/">Dashboard</a>
+        <a href="/database_mahasiswa/mahasiswa" class="active">Data Mahasiswa</a>
+        <a href="/database_mahasiswa/prodi">Program Studi</a>
+        <a href="/database_mahasiswa/dosen">Data Dosen</a>
+        <a href="/database_mahasiswa/matakuliah">Mata Kuliah</a>
+        <a href="/database_mahasiswa/krs">Data KRS</a>
+        <a href="/database_mahasiswa/laporan">Laporan</a>
+    </div>
+
+    <main class="content">
+        <h1>Data Mahasiswa</h1>
+        <p>Daftar seluruh mahasiswa yang terdaftar dalam database.</p>
+
+        <div class="form-container">
+            <h2>Tambah Mahasiswa</h2>
+
+            <form action="/database_mahasiswa/tambah" method="POST">
+
+                <div class="form-group">
+                    <label>NIM</label>
+                    <input type="text" name="nim" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Mahasiswa</label>
+                    <input type="text" name="nama_mahasiswa" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenis Kelamin</label>
+                    <select name="jenis_kelamin" required>
+                        <option value="">Pilih Jenis Kelamin</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal Lahir</label>
+                    <input type="date" name="tanggal_lahir" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <input type="text" name="alamat" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ID Program Studi</label>
+                    <input type="number" name="id_prodi" min="1" max="10" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Simpan Mahasiswa
+                </button>
+
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>NIM</th>
+                        <th>Nama Mahasiswa</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Tanggal Lahir</th>
+                        <th>Alamat</th>
+                        <th>Program Studi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {{data_mahasiswa}}
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</body>
+</html>

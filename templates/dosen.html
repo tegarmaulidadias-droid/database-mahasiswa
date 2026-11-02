@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Dosen</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Data Mahasiswa</h2>
+
+        <a href="/database_mahasiswa/">Dashboard</a>
+        <a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+        <a href="/database_mahasiswa/prodi">Program Studi</a>
+        <a href="/database_mahasiswa/dosen" class="active">Data Dosen</a>
+        <a href="/database_mahasiswa/matakuliah">Mata Kuliah</a>
+        <a href="/database_mahasiswa/krs">Data KRS</a>
+        <a href="/database_mahasiswa/laporan">Laporan</a>
+    </div>
+
+    <main class="content">
+        <h1>Data Dosen</h1>
+        <p>Daftar seluruh dosen yang terdaftar dalam database.</p>
+
+        <div class="form-container">
+            <h2>Tambah Dosen</h2>
+
+            <form action="/database_mahasiswa/tambah-dosen" method="POST">
+
+                <div class="form-group">
+                    <label>NIDN</label>
+                    <input type="text" name="nidn" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Dosen</label>
+                    <input type="text" name="nama_dosen" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nomor Telepon</label>
+                    <input type="text" name="no_telepon" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ID Program Studi</label>
+                    <input type="number" name="id_prodi" min="1" max="10" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Simpan Dosen
+                </button>
+
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>NIDN</th>
+                        <th>Nama Dosen</th>
+                        <th>No. Telepon</th>
+                        <th>Program Studi</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {{data_dosen}}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

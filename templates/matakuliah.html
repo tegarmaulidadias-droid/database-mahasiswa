@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Mata Kuliah</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="/database_mahasiswa/">Dashboard</a>
+    <a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+    <a href="/database_mahasiswa/prodi">Program Studi</a>
+    <a href="/database_mahasiswa/dosen">Data Dosen</a>
+    <a href="/database_mahasiswa/matakuliah" class="active">Mata Kuliah</a>
+    <a href="/database_mahasiswa/krs">KRS</a>
+    <a href="/database_mahasiswa/laporan">Laporan</a>
+</div>
+
+<div class="main-content">
+
+    <h1>Data Mata Kuliah</h1>
+    <p>Kelola data mata kuliah yang tersedia.</p>
+
+    <div class="form-container">
+        <h2>Tambah Mata Kuliah</h2>
+
+        <form action="/database_mahasiswa/tambah-matakuliah" method="POST">
+
+            <div class="form-group">
+                <label>ID Mata Kuliah</label>
+                <input type="text" name="id_mk" placeholder="Masukkan ID Mata Kuliah" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Mata Kuliah</label>
+                <input type="text" name="nama_mk" placeholder="Masukkan Nama Mata Kuliah" required>
+            </div>
+
+            <div class="form-group">
+                <label>Semester</label>
+                <input type="number" name="semester" min="1" max="14" placeholder="Contoh: 2" required>
+            </div>
+
+            <div class="form-group">
+                <label>SKS</label>
+                <input type="number" name="sks" min="1" max="6" placeholder="Contoh: 3" required>
+            </div>
+
+            <div class="form-group">
+                <label>NIDN Dosen</label>
+                <input type="text" name="nidn" placeholder="Masukkan NIDN Dosen" required>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                Tambah Mata Kuliah
+            </button>
+
+        </form>
+    </div>
+
+    <div class="table-container">
+
+        <h2>Daftar Mata Kuliah</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>ID Mata Kuliah</th>
+                    <th>Nama Mata Kuliah</th>
+                    <th>Semester</th>
+                    <th>SKS</th>
+                    <th>Dosen Pengampu</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{data_matakuliah}}
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

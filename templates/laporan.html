@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Data Akademik</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="/database_mahasiswa/">Dashboard</a>
+    <a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+    <a href="/database_mahasiswa/prodi">Program Studi</a>
+    <a href="/database_mahasiswa/dosen">Data Dosen</a>
+    <a href="/database_mahasiswa/matakuliah">Mata Kuliah</a>
+    <a href="/database_mahasiswa/krs">KRS</a>
+    <a href="/database_mahasiswa/laporan" class="active">Laporan</a>
+</div>
+
+<div class="main-content">
+
+    <h1>Laporan Data Akademik</h1>
+    <p>Menampilkan berbagai laporan dari database akademik.</p>
+
+    <div class="table-container">
+        <h2>Laporan Data Mahasiswa</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Jenis Kelamin</th>
+                    <th>Program Studi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{laporan_mahasiswa}}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Laporan Dosen dan Mata Kuliah</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIDN</th>
+                    <th>Nama Dosen</th>
+                    <th>Mata Kuliah</th>
+                    <th>SKS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{laporan_dosen}}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Laporan KRS Mahasiswa</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>NIM</th>
+                    <th>Nama Mahasiswa</th>
+                    <th>Mata Kuliah</th>
+                    <th>Semester</th>
+                    <th>Nilai Angka</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{laporan_krs}}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>

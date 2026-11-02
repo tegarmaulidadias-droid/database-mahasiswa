@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Data Mahasiswa</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Data Mahasiswa</h2>
+
+
+<a href="/database_mahasiswa/" class="active">Dashboard</a>
+<a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+<a href="/database_mahasiswa/prodi">Program Studi</a>
+<a href="/database_mahasiswa/dosen">Data Dosen</a>
+<a href="/database_mahasiswa/matakuliah">Mata Kuliah</a>
+<a href="/database_mahasiswa/krs">Data KRS</a>
+<a href="/database_mahasiswa/laporan">Laporan</a>
+
+    </div>
+
+    <main class="content">
+        <h1>Dashboard</h1>
+        <p>Selamat datang di Sistem Informasi Data Mahasiswa.</p>
+
+        <div class="card">
+            <h3>Total Mahasiswa</h3>
+            <h1>{{jumlah_mahasiswa}}</h1>
+        </div>
+
+        <div class="welcome">
+            <h2>Sistem Informasi Akademik</h2>
+            <p>
+                Aplikasi ini digunakan untuk mengelola data mahasiswa,
+                program studi, dosen, mata kuliah, dan KRS.
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>

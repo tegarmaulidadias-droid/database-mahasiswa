@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Mata Kuliah</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="/database_mahasiswa/">Dashboard</a>
+    <a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+    <a href="/database_mahasiswa/prodi">Program Studi</a>
+    <a href="/database_mahasiswa/dosen">Data Dosen</a>
+    <a href="/database_mahasiswa/matakuliah" class="active">Mata Kuliah</a>
+    <a href="/database_mahasiswa/krs">KRS</a>
+    <a href="/database_mahasiswa/laporan">Laporan</a>
+</div>
+
+<div class="main-content">
+    <h1>Edit Mata Kuliah</h1>
+
+    <div class="form-container">
+        <form action="/database_mahasiswa/update-matakuliah" method="POST">
+
+            <label>ID Mata Kuliah</label>
+            <input type="text" name="id_mk" value="{{id_mk}}" readonly>
+
+            <label>Nama Mata Kuliah</label>
+            <input type="text" name="nama_mk" value="{{nama_mk}}" required>
+
+            <label>Semester</label>
+            <input type="number" name="semester" min="1" max="14"
+                   value="{{semester}}" required>
+
+            <label>SKS</label>
+            <input type="number" name="sks" min="1" max="6"
+                   value="{{sks}}" required>
+
+            <label>NIDN Dosen</label>
+            <input type="text" name="nidn" value="{{nidn}}" required>
+
+            <button type="submit">Simpan Perubahan</button>
+            <a href="/database_mahasiswa/matakuliah">Batal</a>
+
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

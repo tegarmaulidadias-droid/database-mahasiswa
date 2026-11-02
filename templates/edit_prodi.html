@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Program Studi</title>
+    <link rel="stylesheet" href="/database_mahasiswa/static/style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Data Mahasiswa</h2>
+
+        <a href="/database_mahasiswa/">Dashboard</a>
+        <a href="/database_mahasiswa/mahasiswa">Data Mahasiswa</a>
+        <a href="/database_mahasiswa/prodi" class="active">Program Studi</a>
+        <a href="/database_mahasiswa/dosen">Data Dosen</a>
+        <a href="/database_mahasiswa/matakuliah">Mata Kuliah</a>
+        <a href="/database_mahasiswa/krs">Data KRS</a>
+        <a href="/database_mahasiswa/laporan">Laporan</a>
+    </div>
+
+    <main class="content">
+        <h1>Edit Program Studi</h1>
+        <p>Ubah informasi program studi melalui formulir berikut.</p>
+
+        <div class="form-container">
+            <h2>Form Edit Program Studi</h2>
+
+            <form action="/database_mahasiswa/update-prodi" method="POST">
+
+                <div class="form-group">
+                    <label>ID Program Studi</label>
+                    <input type="number" name="id_prodi" value="{{id_prodi}}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Program Studi</label>
+                    <input type="text" name="nama_prodi" value="{{nama_prodi}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jenjang</label>
+                    <select name="jenjang" required>
+                        <option value="D3" {{d3}}>D3</option>
+                        <option value="D4" {{d4}}>D4</option>
+                        <option value="S1" {{s1}}>S1</option>
+                        <option value="S2" {{s2}}>S2</option>
+                        <option value="S3" {{s3}}>S3</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Akreditasi</label>
+                    <input type="text" name="akreditasi" value="{{akreditasi}}" required>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Simpan Perubahan
+                </button>
+
+                <a href="/database_mahasiswa/prodi">Batal</a>
+
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>
