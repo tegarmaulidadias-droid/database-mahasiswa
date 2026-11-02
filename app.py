@@ -7,7 +7,7 @@ from http.cookies import SimpleCookie
 import secrets
 import hmac
 
-BASE_URL = "/database_mahasiswa"
+BASE_URL = ""
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
@@ -1679,7 +1679,10 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("127.0.0.1", 8000), AppHandler)
+    import os
+
+    port = int(os.environ.get("PORT", 8000))
+    server = HTTPServer(("0.0.0.0", port), AppHandler)
 
     print("===================================")
     print(" SISTEM INFORMASI DATA MAHASISWA")
