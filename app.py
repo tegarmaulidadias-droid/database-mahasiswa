@@ -8,7 +8,7 @@ from http.cookies import SimpleCookie
 import secrets
 import hmac
 
-BASE_URL = "/database_mahasiswa"
+BASE_URL = ""
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
@@ -1407,15 +1407,11 @@ class AppHandler(BaseHTTPRequestHandler):
 
       
 
+        
         if path == f"{BASE_URL}/mahasiswa/tambah":
             nim = self.get_value(data, "nim")
             nama = self.get_value(data, "nama_mahasiswa")
             jk = self.get_value(data, "jenis_kelamin")
-
-        if jk == "Laki-laki":
-            jk = "L"
-        elif jk == "Perempuan":
-            jk = "P"
             tanggal = self.get_value(data, "tanggal_lahir") or None
             alamat = self.get_value(data, "alamat")
             id_prodi = self.get_value(data, "id_prodi")
@@ -1437,11 +1433,6 @@ class AppHandler(BaseHTTPRequestHandler):
             nim = self.get_value(data, "nim")
             nama = self.get_value(data, "nama_mahasiswa")
             jk = self.get_value(data, "jenis_kelamin")
-
-        if jk == "Laki-laki":
-            jk = "L"
-        elif jk == "Perempuan":
-            jk = "P"
             tanggal = self.get_value(data, "tanggal_lahir") or None
             alamat = self.get_value(data, "alamat")
             id_prodi = self.get_value(data, "id_prodi")
@@ -1459,6 +1450,7 @@ class AppHandler(BaseHTTPRequestHandler):
             conn.close()
 
             self.redirect(f"{BASE_URL}/mahasiswa")
+
 
         elif path == f"{BASE_URL}/mahasiswa/hapus":
             nim = self.get_value(data, "nim")
