@@ -1,3 +1,4 @@
+import os
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs, urlencode
@@ -1689,14 +1690,15 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("127.0.0.1", 8000), AppHandler)
+    host = "0.0.0.0"
+    port = int(os.environ.get("PORT", 8000))
+
+    server = HTTPServer((host, port), AppHandler)
 
     print("===================================")
     print(" SISTEM INFORMASI DATA MAHASISWA")
     print("===================================")
-    print("Server berjalan di http://localhost:8000/")
-    print("Username : admin")
-    print("Password : admin123")
+    print("Server berjalan di port {port}")
     print("Tekan CTRL + C untuk menghentikan server.")
 
     try:
