@@ -1,5 +1,5 @@
 import os
-
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs, urlencode
 from database import get_connection
@@ -1193,6 +1193,78 @@ class AppHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
         params = parse_qs(parsed.query)
+                # API SINKRONISASI DATABASE
+        if path == f"{BASE_URL}/api/sync-data":
+
+            api_key = os.environ.get("SYNC_API_KEY", "")
+            supplied_key = self.headers.get("X-Sync-Key", "")
+
+            if not api_key:
+                self.send_error(503, "API key belum dikonfigurasi")
+                return
+
+            if not hmac.compare_digest(
+                supplied_key.encode("utf-8"),
+                api_key.encode("utf-8")
+            ):
+                self.send_error(401, "API key tidak valid")
+                return
+
+            conn = None
+            cursor = None
+
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+
+                tables = [
+                    "program_studi",
+                    "mahasiswa",
+                    "dosen",
+                    "mata_kuliah",
+                    "krs"
+                ]
+
+                sync_data = {}
+
+                for table in tables:
+                    cursor.execute(f"SELECT * FROM {table}")
+                    sync_data[table] = cursor.fetchall()
+
+                response_data = {
+                    "success": True,
+                    "data": sync_data
+                }
+
+                response_body = json.dumps(
+                    response_data,
+                    default=str
+                ).encode("utf-8")
+
+                self.send_response(200)
+                self.send_header(
+                    "Content-Type",
+                    "application/json; charset=utf-8"
+                )
+                self.send_header("Cache-Control", "no-store")
+                self.send_header(
+                    "Content-Length",
+                    str(len(response_body))
+                )
+                self.end_headers()
+                self.wfile.write(response_body)
+
+            except Exception:
+                self.send_error(500, "Gagal mengambil data database")
+
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+
+            return
+
 
         
         if path == f"{BASE_URL}/static/style.css":
