@@ -7,7 +7,7 @@ from http.cookies import SimpleCookie
 import secrets
 import hmac
 
-BASE_URL = ""
+BASE_URL = "/database_mahasiswa"
 
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
@@ -426,8 +426,8 @@ def form_mahasiswa(mode="tambah", mhs=None, error=""):
 
     jk_options = f"""
         <option value="">Pilih jenis kelamin</option>
-        <option value="Laki-laki" {"selected" if jk == "Laki-laki" else ""}>Laki-laki</option>
-        <option value="Perempuan" {"selected" if jk == "Perempuan" else ""}>Perempuan</option>
+        <option value="L" {"selected" if jk == "L" else ""}>Laki-laki</option>
+        <option value="P" {"selected" if jk == "P" else ""}>Perempuan</option>
     """
     error_html = f'<div class="notice error">{escape(error)}</div>' if error else ""
 
@@ -1410,6 +1410,11 @@ class AppHandler(BaseHTTPRequestHandler):
             nim = self.get_value(data, "nim")
             nama = self.get_value(data, "nama_mahasiswa")
             jk = self.get_value(data, "jenis_kelamin")
+
+        if jk == "Laki-laki":
+            jk = "L"
+        elif jk == "Perempuan":
+            jk = "P"
             tanggal = self.get_value(data, "tanggal_lahir") or None
             alamat = self.get_value(data, "alamat")
             id_prodi = self.get_value(data, "id_prodi")
@@ -1431,6 +1436,11 @@ class AppHandler(BaseHTTPRequestHandler):
             nim = self.get_value(data, "nim")
             nama = self.get_value(data, "nama_mahasiswa")
             jk = self.get_value(data, "jenis_kelamin")
+
+        if jk == "Laki-laki":
+            jk = "L"
+        elif jk == "Perempuan":
+            jk = "P"
             tanggal = self.get_value(data, "tanggal_lahir") or None
             alamat = self.get_value(data, "alamat")
             id_prodi = self.get_value(data, "id_prodi")
@@ -1679,10 +1689,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    import os
-
-    port = int(os.environ.get("PORT", 8000))
-    server = HTTPServer(("0.0.0.0", port), AppHandler)
+    server = HTTPServer(("127.0.0.1", 8000), AppHandler)
 
     print("===================================")
     print(" SISTEM INFORMASI DATA MAHASISWA")
