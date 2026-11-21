@@ -7,6 +7,7 @@ from html import escape
 from http.cookies import SimpleCookie
 import secrets
 import hmac
+import hashlib
 
 BASE_URL = ""
 
@@ -42,7 +43,7 @@ def halaman_login(error=""):
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login Admin</title>
+        <title>Login Sistem Informasi Akademik</title>
         <link rel="stylesheet" href="{BASE_URL}/static/style.css">
     </head>
     <body class="login-body">
@@ -51,7 +52,7 @@ def halaman_login(error=""):
             <div class="login-card">
 
                 <div class="login-header">
-                    <h1>ADMIN PANEL</h1>
+                    <h1>SISTEM INFORMASI AKADEMIK</h1>
                     <p>Sistem Informasi Akademik</p>
                 </div>
 
@@ -64,7 +65,7 @@ def halaman_login(error=""):
                         <input
                             type="text"
                             name="username"
-                            placeholder="admin"
+                            placeholder="Masukkan username"
                             autocomplete="username"
                             required
                         >
@@ -77,7 +78,7 @@ def halaman_login(error=""):
                                 type="password"
                                 id="password"
                                 name="password"
-                                placeholder="admin123"
+                                placeholder="Masukkan password"
                                 autocomplete="current-password"
                                 required
                             >
@@ -96,6 +97,9 @@ def halaman_login(error=""):
                 </form>
 
                 <div class="login-footer">
+                    Belum punya akun mahasiswa?
+                    <a href="{BASE_URL}/register" style="color:#1e3a5f;font-weight:bold;text-decoration:none;">Daftar di sini</a>
+                    <br><br>
                     Sistem Informasi Akademik
                 </div>
 
@@ -1142,6 +1146,249 @@ def halaman_laporan():
     return layout("Laporan Data", "laporan", content)
 
 
+# ========================= FITUR AKUN MAHASISWA =========================
+def hash_password(password):
+    """Hash password dengan PBKDF2-HMAC-SHA256 dan salt acak."""
+    salt = secrets.token_bytes(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 260000)
+    return salt.hex() + "$" + digest.hex()
+
+
+def verify_password(password, stored_hash):
+    try:
+        salt_hex, digest_hex = stored_hash.split("$", 1)
+        salt = bytes.fromhex(salt_hex)
+        expected = bytes.fromhex(digest_hex)
+        actual = hashlib.pbkdf2_hmac("sha256", password.encode("utf-8"), salt, 260000)
+        return hmac.compare_digest(actual, expected)
+    except (ValueError, TypeError):
+        return False
+
+
+def halaman_register(error=""):
+    error_html = f'<div class="login-error">{escape(error)}</div>' if error else ""
+    return f"""
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registrasi Mahasiswa</title>
+        <link rel="stylesheet" href="{BASE_URL}/static/style.css">
+    </head>
+    <body class="login-body">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-header">
+                    <h1>REGISTRASI</h1>
+                    <p>Sistem Informasi Akademik</p>
+                </div>
+                {error_html}
+                <form method="POST" action="{BASE_URL}/register">
+                    <div class="login-group">
+                        <label>NIM</label>
+                        <input type="text" name="nim" maxlength="15" placeholder="Masukkan NIM" required>
+                    </div>
+                    <div class="login-group">
+                        <label>Tanggal Lahir</label>
+                        <input type="date" name="tanggal_lahir" required>
+                    </div>
+                    <div class="login-group">
+                        <label>Username</label>
+                        <input type="text" name="username" maxlength="50" placeholder="Buat username" autocomplete="username" required>
+                    </div>
+                    <div class="login-group">
+                        <label>Password</label>
+                        <input type="password" name="password" minlength="8" placeholder="Minimal 8 karakter" autocomplete="new-password" required>
+                    </div>
+                    <div class="login-group">
+                        <label>Konfirmasi Password</label>
+                        <input type="password" name="konfirmasi_password" minlength="8" placeholder="Ulangi password" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="login-button">DAFTAR</button>
+                </form>
+                <div class="login-footer">
+                    Sudah punya akun? <a href="{BASE_URL}/login" style="color:#1e3a5f;font-weight:bold;text-decoration:none;">Login di sini</a>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+
+def user_sidebar(active=""):
+    menus = [
+        ("Dashboard", "/user/dashboard", "dashboard"),
+        ("Profil Saya", "/user/profil", "profil"),
+        ("Kartu Rencana Studi", "/user/krs", "krs"),
+        ("Nilai Akademik", "/user/nilai", "nilai"),
+        ("Data Mata Kuliah", "/user/matakuliah", "matakuliah")
+    ]
+    menu_html = "".join(
+        f'<a class="{"active" if active == key else ""}" href="{BASE_URL}{url}">{title}</a>'
+        for title, url, key in menus
+    )
+    return f"""
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>MAHASISWA</h2>
+                <p>Sistem Informasi Akademik</p>
+            </div>
+            <nav>{menu_html}</nav>
+        </aside>
+    """
+
+
+def user_layout(title, active, content, username):
+    return f"""
+    <!DOCTYPE html>
+    <html lang="id">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{escape(title)}</title>
+        <link rel="stylesheet" href="{BASE_URL}/static/style.css">
+    </head>
+    <body>
+        {user_sidebar(active)}
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h1>{escape(title)}</h1>
+                    <p>Sistem Informasi Akademik</p>
+                </div>
+                <div class="admin-info">
+                    <div class="admin-label">{escape(username)}</div>
+                    <a href="{BASE_URL}/logout" class="logout-button">Logout</a>
+                </div>
+            </header>
+            {content}
+        </main>
+    </body>
+    </html>
+    """
+
+
+def get_user_mahasiswa(nim):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT m.nim, m.nama_mahasiswa, m.jenis_kelamin, m.tanggal_lahir,
+               m.alamat, m.id_prodi, p.nama_prodi
+        FROM mahasiswa m
+        LEFT JOIN program_studi p ON m.id_prodi = p.id_prodi
+        WHERE m.nim = %s
+    """, (nim,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return result
+
+
+def user_dashboard(nim, username):
+    mhs = get_user_mahasiswa(nim)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM krs WHERE nim = %s", (nim,))
+    jumlah_krs = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM krs WHERE nim = %s AND nilai_angka IS NOT NULL", (nim,))
+    jumlah_nilai = cursor.fetchone()[0]
+    cursor.close()
+    conn.close()
+    nama = mhs["nama_mahasiswa"] if mhs else username
+    prodi = mhs["nama_prodi"] if mhs and mhs["nama_prodi"] else "-"
+    content = f"""
+        <section class="welcome">
+            <h2>Selamat Datang, {escape(str(nama))}!</h2>
+            <p>Selamat datang di halaman mahasiswa. Di sini lu dapat melihat profil dan informasi akademik milik lu.</p>
+        </section>
+        <section>
+            <h2 class="section-title">Ringkasan Akademik</h2>
+            <div class="card-container">
+                <div class="card"><div class="card-icon">👨‍🎓</div><h3>Program Studi</h3><p style="font-size:18px">{escape(str(prodi))}</p><span>Program studi lu</span></div>
+                <div class="card"><div class="card-icon">📝</div><h3>Mata Kuliah Diambil</h3><p>{jumlah_krs}</p><span>Total data KRS</span></div>
+                <div class="card"><div class="card-icon">📊</div><h3>Nilai Tersedia</h3><p>{jumlah_nilai}</p><span>Nilai yang sudah diinput</span></div>
+            </div>
+        </section>
+        <section class="quick-access">
+            <h2>Informasi</h2>
+            <p>Gunakan menu di sebelah kiri untuk melihat profil, KRS, nilai akademik, dan data mata kuliah.</p>
+        </section>
+    """
+    return user_layout("Dashboard Mahasiswa", "dashboard", content, username)
+
+
+def user_profil(nim, username):
+    mhs = get_user_mahasiswa(nim)
+    if not mhs:
+        return user_layout("Profil Saya", "profil", '<div class="notice error">Data mahasiswa tidak ditemukan.</div>', username)
+    tanggal = mhs["tanggal_lahir"].strftime("%d-%m-%Y") if mhs["tanggal_lahir"] else "-"
+    fields = [
+        ("NIM", mhs["nim"]), ("Nama Mahasiswa", mhs["nama_mahasiswa"]),
+        ("Jenis Kelamin", mhs["jenis_kelamin"]), ("Tanggal Lahir", tanggal),
+        ("Alamat", mhs["alamat"] or "-"), ("Program Studi", mhs["nama_prodi"] or "-")
+    ]
+    rows = "".join(f'<tr><th>{escape(str(label))}</th><td>{escape(str(value))}</td></tr>' for label, value in fields)
+    content = f'<section class="report-panel"><div class="report-panel-heading"><div><h3>Informasi Pribadi</h3><p>Data profil mahasiswa yang terdaftar di sistem</p></div></div><div class="table-wrapper"><table><tbody>{rows}</tbody></table></div></section>'
+    return user_layout("Profil Saya", "profil", content, username)
+
+
+def user_krs(nim, username, nilai_only=False):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT k.id_krs, k.semester, k.nilai_angka, mk.id_mk, mk.nama_mk,
+               mk.sks, d.nama_dosen
+        FROM krs k
+        JOIN mata_kuliah mk ON k.id_mk = mk.id_mk
+        LEFT JOIN dosen d ON mk.nidn = d.nidn
+        WHERE k.nim = %s
+        ORDER BY k.semester, mk.nama_mk
+    """, (nim,))
+    rows_data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    if nilai_only:
+        rows_data = [row for row in rows_data if row["nilai_angka"] is not None]
+        title, active = "Nilai Akademik", "nilai"
+    else:
+        title, active = "Kartu Rencana Studi", "krs"
+    rows = ""
+    for row in rows_data:
+        nilai = row["nilai_angka"] if row["nilai_angka"] is not None else "Belum tersedia"
+        rows += f"<tr><td>{escape(str(row['semester']))}</td><td>{escape(str(row['id_mk']))}</td><td>{escape(str(row['nama_mk']))}</td><td>{escape(str(row['sks']))}</td><td>{escape(str(row['nama_dosen'] or '-'))}</td>"
+        if nilai_only:
+            rows += f'<td>{escape(str(nilai))}</td>'
+        rows += '</tr>'
+    if not rows:
+        colspan = 6 if nilai_only else 5
+        rows = f'<tr><td colspan="{colspan}" class="empty">Belum ada data.</td></tr>'
+    last_heading = '<th>Nilai</th>' if nilai_only else ''
+    content = f"<section class='report-panel'><div class='report-panel-heading'><div><h3>{escape(title)}</h3><p>Data akademik berdasarkan akun mahasiswa yang sedang login</p></div></div><div class='table-wrapper'><table><thead><tr><th>Semester</th><th>Kode MK</th><th>Mata Kuliah</th><th>SKS</th><th>Dosen</th>{last_heading}</tr></thead><tbody>{rows}</tbody></table></div></section>"
+    return user_layout(title, active, content, username)
+
+
+def user_matakuliah(nim, username):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT mk.id_mk, mk.nama_mk, mk.semester, mk.sks, d.nama_dosen
+        FROM mata_kuliah mk
+        LEFT JOIN dosen d ON mk.nidn = d.nidn
+        ORDER BY mk.semester, mk.nama_mk
+    """)
+    data = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    rows = "".join(
+        f'<tr><td>{escape(str(r["id_mk"]))}</td><td>{escape(str(r["nama_mk"]))}</td><td>{escape(str(r["semester"]))}</td><td>{escape(str(r["sks"]))}</td><td>{escape(str(r["nama_dosen"] or "-"))}</td></tr>'
+        for r in data
+    ) or '<tr><td colspan="5" class="empty">Belum ada data mata kuliah.</td></tr>'
+    content = f"<section class='report-panel'><div class='report-panel-heading'><div><h3>Daftar Mata Kuliah</h3><p>Informasi mata kuliah yang tersedia</p></div></div><div class='table-wrapper'><table><thead><tr><th>Kode MK</th><th>Nama Mata Kuliah</th><th>Semester</th><th>SKS</th><th>Dosen</th></tr></thead><tbody>{rows}</tbody></table></div></section>"
+    return user_layout("Data Mata Kuliah", "matakuliah", content, username)
+
+
 class AppHandler(BaseHTTPRequestHandler):
 
     def redirect(self, path):
@@ -1281,11 +1528,21 @@ class AppHandler(BaseHTTPRequestHandler):
             return
 
        
+        if path == f"{BASE_URL}/register":
+            if self.is_logged_in():
+                session = SESSIONS.get(self.get_session_id(), {})
+                destination = f"{BASE_URL}/user/dashboard" if session.get("role") == "mahasiswa" else f"{BASE_URL}/"
+                self.redirect(destination)
+                return
+            self.send_html(halaman_register())
+            return
+
         if path == f"{BASE_URL}/login":
             if self.is_logged_in():
-                self.redirect(f"{BASE_URL}/")
+                session = SESSIONS.get(self.get_session_id(), {})
+                destination = f"{BASE_URL}/user/dashboard" if session.get("role") == "mahasiswa" else f"{BASE_URL}/"
+                self.redirect(destination)
                 return
-
             self.send_html(halaman_login())
             return
 
@@ -1307,7 +1564,28 @@ class AppHandler(BaseHTTPRequestHandler):
             self.redirect(f"{BASE_URL}/login")
             return
 
-       
+        current_session = SESSIONS.get(self.get_session_id(), {})
+        if current_session.get("role") == "mahasiswa":
+            nim = current_session.get("nim", "")
+            username = current_session.get("username", "Mahasiswa")
+            if path in (f"{BASE_URL}/", f"{BASE_URL}/user", f"{BASE_URL}/user/dashboard"):
+                self.send_html(user_dashboard(nim, username))
+            elif path == f"{BASE_URL}/user/profil":
+                self.send_html(user_profil(nim, username))
+            elif path == f"{BASE_URL}/user/krs":
+                self.send_html(user_krs(nim, username, False))
+            elif path == f"{BASE_URL}/user/nilai":
+                self.send_html(user_krs(nim, username, True))
+            elif path == f"{BASE_URL}/user/matakuliah":
+                self.send_html(user_matakuliah(nim, username))
+            else:
+                self.redirect(f"{BASE_URL}/user/dashboard")
+            return
+
+        if current_session.get("role") != "admin":
+            self.redirect(f"{BASE_URL}/login")
+            return
+
         if path == f"{BASE_URL}/" or path == f"{BASE_URL}":
             self.send_html(dashboard())
 
@@ -1442,34 +1720,108 @@ class AppHandler(BaseHTTPRequestHandler):
         data = self.get_form_data()
 
      
+        if path == f"{BASE_URL}/register":
+            nim = self.get_value(data, "nim")
+            tanggal_lahir = self.get_value(data, "tanggal_lahir")
+            username = self.get_value(data, "username")
+            password = self.get_value(data, "password")
+            konfirmasi = self.get_value(data, "konfirmasi_password")
+
+            if not all([nim, tanggal_lahir, username, password, konfirmasi]):
+                self.send_html(halaman_register("Semua kolom wajib diisi."), 400)
+                return
+            if len(password) < 8:
+                self.send_html(halaman_register("Password minimal 8 karakter."), 400)
+                return
+            if password != konfirmasi:
+                self.send_html(halaman_register("Konfirmasi password tidak cocok."), 400)
+                return
+            if len(username) > 50 or len(nim) > 15:
+                self.send_html(halaman_register("NIM atau username terlalu panjang."), 400)
+                return
+
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute("SELECT nim FROM mahasiswa WHERE nim=%s AND tanggal_lahir=%s", (nim, tanggal_lahir))
+                mahasiswa = cursor.fetchone()
+                if not mahasiswa:
+                    self.send_html(halaman_register("NIM atau tanggal lahir tidak sesuai dengan data mahasiswa."), 400)
+                    return
+                cursor.execute("SELECT id_akun FROM akun_mahasiswa WHERE nim=%s OR username=%s", (nim, username))
+                existing = cursor.fetchone()
+                if existing:
+                    self.send_html(halaman_register("NIM sudah memiliki akun atau username sudah digunakan."), 400)
+                    return
+                cursor.execute(
+                    "INSERT INTO akun_mahasiswa (nim, username, password_hash) VALUES (%s, %s, %s)",
+                    (nim, username, hash_password(password))
+                )
+                conn.commit()
+                self.redirect(f"{BASE_URL}/login")
+            except Exception:
+                if conn:
+                    conn.rollback()
+                self.send_html(halaman_register("Registrasi belum berhasil. Periksa koneksi database atau hubungi administrator."), 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
+            return
+
         if path == f"{BASE_URL}/login":
             username = self.get_value(data, "username")
             password = self.get_value(data, "password")
 
             username_valid = hmac.compare_digest(
-                username.encode("utf-8"),
-                ADMIN_USERNAME.encode("utf-8")
+                username.encode("utf-8"), ADMIN_USERNAME.encode("utf-8")
             )
-
             password_valid = hmac.compare_digest(
-                password.encode("utf-8"),
-                ADMIN_PASSWORD.encode("utf-8")
+                password.encode("utf-8"), ADMIN_PASSWORD.encode("utf-8")
             )
 
             if username_valid and password_valid:
                 session_id = secrets.token_urlsafe(32)
-                SESSIONS[session_id] = True
-
+                SESSIONS[session_id] = {"role": "admin", "username": "Administrator"}
                 self.send_response(303)
                 self.set_login_cookie(session_id)
                 self.send_header("Location", f"{BASE_URL}/")
                 self.end_headers()
-            else:
-                self.send_html(
-                    halaman_login("Username atau password salah."),
-                    401
-                )
+                return
 
+            conn = None
+            cursor = None
+            try:
+                conn = get_connection()
+                cursor = conn.cursor(dictionary=True)
+                cursor.execute(
+                    "SELECT nim, username, password_hash FROM akun_mahasiswa WHERE username=%s",
+                    (username,)
+                )
+                account = cursor.fetchone()
+                if account and verify_password(password, account["password_hash"]):
+                    session_id = secrets.token_urlsafe(32)
+                    SESSIONS[session_id] = {
+                        "role": "mahasiswa",
+                        "nim": account["nim"],
+                        "username": account["username"]
+                    }
+                    self.send_response(303)
+                    self.set_login_cookie(session_id)
+                    self.send_header("Location", f"{BASE_URL}/user/dashboard")
+                    self.end_headers()
+                else:
+                    self.send_html(halaman_login("Username atau password salah."), 401)
+            except Exception:
+                self.send_html(halaman_login("Tidak dapat menghubungi database. Coba lagi."), 500)
+            finally:
+                if cursor:
+                    cursor.close()
+                if conn:
+                    conn.close()
             return
 
         
@@ -1477,9 +1829,11 @@ class AppHandler(BaseHTTPRequestHandler):
             self.redirect(f"{BASE_URL}/login")
             return
 
-      
+        current_session = SESSIONS.get(self.get_session_id(), {})
+        if current_session.get("role") != "admin":
+            self.redirect(f"{BASE_URL}/user/dashboard")
+            return
 
-        
         if path == f"{BASE_URL}/mahasiswa/tambah":
             nim = self.get_value(data, "nim")
             nama = self.get_value(data, "nama_mahasiswa")
